@@ -37,10 +37,10 @@ LEFT = 'left'
 RIGHT = 'right'
 
 game.mixer.init()
-blockSound1 = mixer.Sound("Word-Slide-Puzzle/FBLA GAME/Sounds/Block.wav")
-blockSound2 = mixer.Sound("Word-Slide-Puzzle/FBLA GAME/Sounds/Block2.wav")
-blockSound3 = mixer.Sound("Word-Slide-Puzzle/FBLA GAME/Sounds/Block3.wav")
-selectSound = mixer.Sound("Word-Slide-Puzzle/FBLA GAME/Sounds/Select.wav")
+blockSound1 = mixer.Sound("Assets/Sounds/Block.wav")
+blockSound2 = mixer.Sound("Assets/Sounds/Block2.wav")
+blockSound3 = mixer.Sound("Assets/Sounds/Block3.wav")
+selectSound = mixer.Sound("Assets/Sounds/Select.wav")
 sounds = [blockSound1, blockSound2, blockSound3]
 
 def main_menu():
@@ -48,7 +48,7 @@ def main_menu():
         RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, X_MARGIN, T_MARGIN, WORDS_LEN_1, WORDS_LEN_2, \
         LETTER_POSITIONS, game_back_button, font
     
-    icon = game.image.load("Word-Slide-Puzzle/Assets/app_icon.png")
+    icon = game.image.load("Assets/game_images/app_icon.png")
     game.display.set_icon(icon)
     screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     game.display.set_caption("Main Menu")
@@ -60,82 +60,83 @@ def main_menu():
     tiles = m.ceil(SCREEN_WIDTH / SCREEN_HEIGHT)+1
     FPS = 60
     clock = game.time.Clock()
-    background = game.image.load("Word-Slide-Puzzle/Assets/background.png").convert()
+    background = game.image.load("Assets/game_images/background.png").convert()
     background = game.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
     background_rect = background.get_rect()
     SOUND = True
 
     # define fonts
     game.font.init()
-    font = game.font.SysFont("arialblack", 40)
+    font = "Assets/funtauna11/FuntaunaBold.otf"
 
     # back
-    back_img = game.image.load('Word-Slide-Puzzle/Assets/more buttons/back.png').convert_alpha() 
+    back_img = game.image.load('Assets/more buttons/back.png').convert_alpha() 
     back_img = pygame.transform.smoothscale_by(back_img, 0.3)
     back_button = Button.Button(625, 475, back_img, 1)
 
     # resume 
-    resume_img = game.image.load("Word-Slide-Puzzle/Assets/buttons/resume.png").convert_alpha() 
+    resume_img = game.image.load("Assets/buttons/resume.png").convert_alpha() 
     resume_img = game.transform.smoothscale_by(resume_img, 0.25)
     resume_button = Button.Button(304, 75, resume_img, 1)
 
     # options 
-    options_img = game.image.load("Word-Slide-Puzzle/Assets/buttons/options.png").convert_alpha() 
+    options_img = game.image.load("Assets/buttons/options.png").convert_alpha() 
     options_img = game.transform.smoothscale_by(options_img, 0.25)
     options_button = Button.Button(304, 300, options_img, 1)
 
     # quit
-    quit_img = game.image.load("Word-Slide-Puzzle/Assets/buttons/quit.png").convert_alpha() 
+    quit_img = game.image.load("Assets/buttons/quit.png").convert_alpha() 
     quit_img = game.transform.smoothscale_by(quit_img, 0.25)
     quit_button = Button.Button(304, 500, quit_img, 1)
 
     # play
-    play_img = game.image.load('Word-Slide-Puzzle/Assets/buttons/play.png').convert_alpha() 
+    play_img = game.image.load('Assets/buttons/play.png').convert_alpha() 
     play_img = game.transform.smoothscale_by(play_img, 0.25)
     play_button = Button.Button(300, 475, play_img, 1)
 
     # easy mode
-    threeBoardSize_img = game.image.load('Word-Slide-Puzzle/Assets/more buttons/easy.png').convert_alpha()
+    threeBoardSize_img = game.image.load('Assets/more buttons/easy.png').convert_alpha()
     threeBoardSize_img = game.transform.smoothscale_by(threeBoardSize_img, 0.25)
     threeBoardSize_button = Button.Button(300, 100, threeBoardSize_img, 1)
 
     # medium mode
-    fourBoardSize_img = game.image.load('Word-Slide-Puzzle/Assets/more buttons/medium.png').convert_alpha()
+    fourBoardSize_img = game.image.load('Assets/more buttons/medium.png').convert_alpha()
     fourBoardSize_img = game.transform.smoothscale_by(fourBoardSize_img, 0.25)
     fourBoardSize_button = Button.Button(300, 225, fourBoardSize_img, 1)
 
     # hard mode
-    fiveBoardSize_img = game.image.load('Word-Slide-Puzzle/Assets/more buttons/hard.png').convert_alpha() 
+    fiveBoardSize_img = game.image.load('Assets/more buttons/hard.png').convert_alpha() 
     fiveBoardSize_img = game.transform.smoothscale_by(fiveBoardSize_img, 0.25)
     fiveBoardSize_button = Button.Button(300, 350, fiveBoardSize_img, 1)
 
     # sound 
-    sound_img = game.image.load('Word-Slide-Puzzle/Assets/more buttons/apply.png').convert_alpha() 
+    sound_img = game.image.load('Assets/buttons/Sound.png').convert_alpha() 
     sound_img = game.transform.smoothscale_by(sound_img, 0.25)
-    sound_button = Button.Button(304, 400, sound_img, 1)
+    sound_button = Button.Button(375, 400, sound_img, 1)
 
     # logo
-    logo_img = game.image.load("Word-Slide-Puzzle/Assets/logo.png").convert_alpha() 
+    logo_img = game.image.load("Assets/game_images/logo.png").convert_alpha() 
     logo_img = game.transform.smoothscale_by(logo_img, 0.4)
     logo_button = Button.Button(200, 10, logo_img, 1)
 
     # tutorial
-    tutorial_img = game.image.load('Word-Slide-Puzzle/Assets/buttons/tutorial.png').convert_alpha() 
+    tutorial_img = game.image.load('Assets/buttons/tutorial.png').convert_alpha() 
     tutorial_img = pygame.transform.smoothscale_by(tutorial_img, 0.22)
     tutorial_button = Button.Button(50, 400, tutorial_img, 1)
 
     # leader board
-    leader_board_img = game.image.load("Word-Slide-Puzzle/Assets/buttons/leaderboard.png").convert_alpha()
+    leader_board_img = game.image.load("Assets/buttons/leaderboard.png").convert_alpha()
     leader_board_img = pygame.transform.smoothscale_by(leader_board_img, 0.25)
     leader_board_button = Button.Button(550, 400, leader_board_img, 1)
     
     # back button in game screen
-    game_back_img = game.image.load("Word-Slide-Puzzle/Assets/more buttons/exit.png").convert_alpha()
+    game_back_img = game.image.load("Assets/more buttons/exit.png").convert_alpha()
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
     # game loop
     chosen = False
+    game.freetype.init()
     while in_main_menu:
         clock.tick(FPS)
 
@@ -149,9 +150,6 @@ def main_menu():
         # reset scroll:
         if abs(scroll) > SCREEN_WIDTH:
             scroll = 0
-
-        # check if game is paused
-        game.freetype.init()
 
         if menu_state == "main":
         # draw pause screen buttons
@@ -177,11 +175,11 @@ def main_menu():
             game.display.set_caption("Leader Board")
 
             leaderBoard = game.draw.rect(screen, BEIGE, (200,100,400,400))
-            leaderBoardTextDisplay = pygame.freetype.Font("Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf", 20)
+            leaderBoardTextDisplay = game.freetype.Font(font)
             leaderBoardTextDisplay.render_to(screen, (295, 105, 160), "Leader Board", TEXT_COL, size=35)
             leaderBoardTextDisplay.render_to(screen, (220, 150, 160), "Score   Name", TEXT_COL, size=30)
 
-            with open("Word-Slide-Puzzle/FBLA GAME/highscore.txt", "r") as f:
+            with open("FBLA GAME/highscore.txt", "r") as f:
                 increment_y = 185
                 data = sorted([i for i in f.read().splitlines() if i])
                 for i in range(15):
@@ -199,7 +197,7 @@ def main_menu():
         if menu_state == "tutorial":
             game.display.set_caption("Tutorial")
             game.draw.rect(screen, BEIGE, (270,50,300,23))
-            tutorialFont = game.freetype.Font('Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf')
+            tutorialFont = game.freetype.Font(font)
             tutorial_text = [" " * 13 + "TUTORIAL", "Click or use the arrow ", "keys to move the letter", \
                                 "tiles around. Try to ", "move all the letters to ", "form the correct words ", \
                                 "in the least moves ", "possible to get", "lowest score. Enjoy!"]
@@ -256,9 +254,9 @@ def main():
 
     FPS_CLOCK = game.time.Clock()
     game.display.set_caption('Word Windows')
-    TEXT_FONT = game.font.Font('Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf', BASIC_FONT_SIZE)
-    TILE_FONT = game.font.Font('Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf', TILE_FONT_SIZE)
-    SMALL_FONT = game.font.Font('Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf', SMALL_FONT_SIZE)
+    TEXT_FONT = game.font.Font(font, BASIC_FONT_SIZE)
+    TILE_FONT = game.font.Font(font, TILE_FONT_SIZE)
+    SMALL_FONT = game.font.Font(font, SMALL_FONT_SIZE)
 
     # Store the option buttons and their rectangles in OPTIONS.
     RESET_SURF, RESET_RECT = makeText('Reset',    TEXT_COLOR, TILE_COLOR, SCREEN_WIDTH - 120, SCREEN_HEIGHT - 90)
@@ -277,8 +275,9 @@ def main():
             game.display.set_caption("Input Name")
             msg = f"Solved! Your final score is: {len(allMoves)}"
 
+            leader_board_font = game.font.Font(font, 40)
             leaderBoardManager = pyti.TextInputManager(validator = lambda input: len(input) <= 20)
-            leaderBoardText = pyti.TextInputVisualizer(manager=leaderBoardManager, font_object=font)
+            leaderBoardText = pyti.TextInputVisualizer(manager=leaderBoardManager, font_object=leader_board_font)
             leaderBoardScreen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
             clock = game.time.Clock()
@@ -289,7 +288,7 @@ def main():
                 leaderBoardScreen.fill(POWDER_BLUE)
                 game.draw.rect(leaderBoardScreen, DUSTY_ROSE, (250,0,300,130))
 
-                leader_board_font = game.freetype.Font('Word-Slide-Puzzle/FBLA GAME/funtauna11/FuntaunaBold.otf')
+                leader_board_font = game.freetype.Font(font)
                 leader_board_text = ['Input your name to go on', 'the leaderboard.', 
                                      'Press Enter/Return when', 'you have finished.']
                 increment_y = 0
@@ -311,7 +310,7 @@ def main():
                     if event.type == game.QUIT:
                         terminate()
                     if event.type == game.KEYDOWN and event.key == game.K_RETURN:
-                        with open("Word-Slide-Puzzle/FBLA GAME/highscore.txt", "a") as file:
+                        with open("FBLA GAME/highscore.txt", "a") as file:
                             score_val = str(len(allMoves))
                             score_val = score_val.zfill(4)
                             leaderBoardRun = False
@@ -380,7 +379,7 @@ def main():
 
 
 def generate_new_words():
-    with open("Word-Slide-Puzzle/FBLA GAME/dictionary/popular.txt", "r") as f:
+    with open("Assets/dictionary/popular.txt", "r") as f:
         for line in f.readlines():
             line = line.strip()
             if len(line) == BOARD_WIDTH and not any(i.isupper() for i in line) and line.isalpha():
@@ -614,6 +613,6 @@ def resetAnimation(board, allMoves):
         makeMove(board, oppositeMove)
     
 if __name__ == '__main__':
-    mixer.music.load("Word-Slide-Puzzle/FBLA GAME/Sounds/main theme.wav") 
-    mixer.music.play(-1)
+    mixer.music.load("Assets/Sounds/main theme.wav") 
+    mixer.music.play(-1)    
     main_menu()
