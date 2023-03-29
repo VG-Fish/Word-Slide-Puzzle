@@ -1,4 +1,4 @@
-import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti
+import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti, copy
 from pygame.locals import *
 from pygame import mixer
 
@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 600
 FPS = 30
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
-num_slides = 1
+num_slides = 50
 
 #                R   G   B
 PRUSSIAN_BLUE = (29, 53, 87) 
@@ -400,6 +400,37 @@ def generate_new_words():
 
     return LETTER_POSITIONS
 
+def transpose_matrix(board):
+    return [i for i in zip(*board)]
+
+def get_inversion_count(board):
+    transposed_matrix = transpose_matrix(board)
+    arr = []
+    for y in transposed_matrix:
+        for x in y:
+            arr.append(x)
+            
+    inversion_count = 0
+    for i in range(BOARD_HEIGHT * BOARD_HEIGHT - 1):
+        for j in range(i + 1, BOARD_HEIGHT * BOARD_HEIGHT):
+            if arr[j] and arr[i] and arr[i] > arr[j]:
+                inversion_count += 1
+
+    return inversion_count
+
+def is_solvable(board):
+    inversion_count = get_inversion_count(board)
+    blank_row = getBlankPosition(board)[0]
+
+    is_inversion_count_even = inversion_count % 2 == 0
+
+    if BOARD_HEIGHT % 2 == 1:
+        return is_inversion_count_even
+
+    if blank_row % 2 == 1:
+        return is_inversion_count_even
+    return not is_inversion_count_even
+
 def playRandom():
     if SOUND:
         r.choice(sounds).play()
@@ -436,7 +467,7 @@ def getBlankPosition(board):
     # Return the x and y of board coordinates of the blank space.
     for x in range(BOARD_WIDTH):
         for y in range(BOARD_HEIGHT):
-            if board[x][y] == BLANK:
+            if board[x][y] is BLANK:
                 return (x, y)
 
 def makeMove(board, move):
@@ -594,6 +625,9 @@ def generateNewPuzzle(numSlides):
         makeMove(board, move)
         sequence.append(move)
         lastMove = move
+    
+    if not is_solvable(board):
+        generateNewPuzzle(numSlides)
 
     return (board, sequence)
 
