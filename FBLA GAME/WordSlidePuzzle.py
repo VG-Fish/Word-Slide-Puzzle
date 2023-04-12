@@ -1,4 +1,5 @@
-import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti, copy
+# credit to https://inventwithpython.com/pygame/chapter4.html for many sliding window puzzle code
+import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti
 from pygame.locals import *
 from pygame import mixer
 
@@ -55,7 +56,7 @@ def main_menu():
 
     # game variables
     scroll = 0
-    in_main_menu = True
+    in_main_menu, single_player, ai_battle = True, False, False
     menu_state = "main"
     tiles = m.ceil(SCREEN_WIDTH / SCREEN_HEIGHT)+1
     FPS = 60
@@ -133,6 +134,11 @@ def main_menu():
     game_back_img = game.image.load("Assets/more buttons/exit.png").convert_alpha()
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
+
+    # battle ai button
+    battle_ai_img = game.image.load("Assets/more buttons/battleai.png").convert_alpha()
+    battle_ai_img = pygame.transform.smoothscale_by(battle_ai_img, 0.25)
+    battle_ai_button = Button.Button(0, 525, battle_ai_img, 1)
 
     # game loop
     chosen = False
@@ -231,6 +237,10 @@ def main_menu():
                 menu_state = "main"
             elif play_button.draw(screen) and chosen:
                 in_main_menu = False
+                single_player = True
+            elif battle_ai_button.draw(screen) and chosen:
+                in_main_menu = False
+                ai_battle = True
 
         # event handler
         for event in game.event.get():
@@ -241,13 +251,17 @@ def main_menu():
                 terminate()
         game.display.update()
 
-    main()
+    initialize_variables()
+    if single_player:
+        single_main()
+    elif ai_battle:
+        ai_main()
 
-def main():
+def initialize_variables():
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
             NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
 
-    LETTER_POSITIONS =  generate_new_words()
+    LETTER_POSITIONS = generate_new_words()
 
     X_MARGIN = (SCREEN_WIDTH - (TILE_SIZE * BOARD_WIDTH + (BOARD_WIDTH - 1))) // 2
     T_MARGIN = (SCREEN_HEIGHT - (TILE_SIZE * BOARD_HEIGHT + (BOARD_HEIGHT - 1))) // 2
@@ -267,6 +281,7 @@ def main():
     SOLVED_BOARD = getStartingBoard() # a solved board is the same as the board in a start state.
     allMoves = [] # list of moves made from the solved configuration
 
+def single_main():
     while True: # main game loop 
         slideTo = None # the direction, if any, a tile should slide
         msg = f"Click near space or press arrow keys to slide. Your current score is: {len(allMoves)}" 
@@ -377,6 +392,9 @@ def main():
         game.display.update()
         FPS_CLOCK.tick(FPS)
 
+
+def ai_main():
+    pass
 
 def generate_new_words():
     with open("Assets/dictionary/popular.txt", "r") as f:
@@ -647,6 +665,6 @@ def resetAnimation(board, allMoves):
         makeMove(board, oppositeMove)
     
 if __name__ == '__main__':
-    mixer.music.load("Assets/Sounds/main theme.wav") 
-    mixer.music.play(-1)    
+    # mixer.music.load("Assets/Sounds/main theme.wav") 
+    # mixer.music.play(-1)    
     main_menu()
