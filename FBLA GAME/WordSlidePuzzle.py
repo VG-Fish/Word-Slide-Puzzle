@@ -1,5 +1,5 @@
 # credit to https://inventwithpython.com/pygame/chapter4.html for many sliding window puzzle code
-import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti
+import sys, os, Button, math as m, random as r, pygame as game, pygame.freetype, pygame_textinput as pyti, string as s
 from pygame.locals import *
 from pygame import mixer
 
@@ -147,8 +147,8 @@ def main_menu():
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
-    tile_colors = {}
-    
+    global tile_colors_cherry
+    tile_colors_cherry = import_tile_colors("cherry")
 
     # game loop
     chosen = False
@@ -470,6 +470,17 @@ def single_main():
         game.display.update()
         FPS_CLOCK.tick(FPS)"""
 
+def import_tile_colors(color):
+    temp = {}
+    letters = s.ascii_uppercase
+    for i in range(26):
+        temp_img = game.image.load(f'Assets/{color}_color_theme/{letters[i]}.png').convert_alpha() 
+        print(temp_img.get_rect())
+        temp_img = pygame.transform.smoothscale_by(temp_img, .3)
+        temp[letters[i].lower()] = temp_img
+    
+    return temp
+
 def generate_new_words():
     with open("Assets/dictionary/popular.txt", "r") as f:
         for line in f.readlines():
@@ -616,6 +627,8 @@ def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0, ai=False):
     # draw a tile at board coordinates tile_x and tile_y, optionally a few
     # pixels over (determined by adj_x and adj_y)
     left, top = getLeftTopOfTile(tile_x, tile_y)
+
+    screen.blit(tile_colors_cherry["a"], (0, 0, TILE_SIZE, TILE_SIZE))
     game.draw.rect(screen, TILE_COLOR, (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
 
     letter = LETTER_POSITIONS.get(number)
