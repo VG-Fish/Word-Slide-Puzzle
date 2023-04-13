@@ -147,6 +147,9 @@ def main_menu():
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
+    tile_colors = {}
+    
+
     # game loop
     chosen = False
     game.freetype.init()
@@ -245,9 +248,9 @@ def main_menu():
             elif play_button.draw(screen) and chosen:
                 in_main_menu = False
                 single_player = True
-            elif battle_ai_button.draw(screen) and chosen:
+            """elif battle_ai_button.draw(screen) and chosen:
                 in_main_menu = False
-                ai_battle = True
+                ai_battle = True"""
 
         # event handler
         for event in game.event.get():
@@ -261,8 +264,8 @@ def main_menu():
     initialize_variables()
     if single_player:
         single_main()
-    elif ai_battle:
-        ai_main()
+    """elif ai_battle:
+        ai_main()"""
 
 def initialize_variables():
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
@@ -403,7 +406,7 @@ def single_main():
         FPS_CLOCK.tick(FPS)
 
 
-def ai_main():
+"""def ai_main(): 
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
             NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
 
@@ -465,7 +468,7 @@ def ai_main():
             allMoves.append(slideTo) # record the slide
 
         game.display.update()
-        FPS_CLOCK.tick(FPS)
+        FPS_CLOCK.tick(FPS)"""
 
 def generate_new_words():
     with open("Assets/dictionary/popular.txt", "r") as f:
@@ -494,10 +497,7 @@ def transpose_matrix(board):
 
 def get_inversion_count(board):
     transposed_matrix = transpose_matrix(board)
-    arr = []
-    for y in transposed_matrix:
-        for x in y:
-            arr.append(x)
+    arr = [j for i in transposed_matrix for j in i]
             
     inversion_count = 0
     for i in range(BOARD_HEIGHT * BOARD_HEIGHT - 1):
@@ -511,14 +511,15 @@ def is_solvable(board):
     inversion_count = get_inversion_count(board)
     blank_row = getBlankPosition(board)[0]
 
-    is_inversion_count_even = inversion_count % 2 == 0
+    check = inversion_count & 1
 
-    if BOARD_HEIGHT % 2 == 1:
-        return is_inversion_count_even
-
-    if blank_row % 2 == 1:
-        return is_inversion_count_even
-    return not is_inversion_count_even
+    if BOARD_HEIGHT & 1:
+        return ~check
+    else:   
+        if blank_row & 1:
+            return ~check
+        else:
+            return check
 
 def playRandom():
     if SOUND:
@@ -596,7 +597,7 @@ def getRandomMove(board, lastMove=None):
     # return a random move from the list of remaining moves
     return r.choice(validMoves)
 
-def getLeftTopOfTile(tile_x, tile_y):
+def getLeftTopOfTile(tile_x, tile_y, ai=False):
     left = X_MARGIN + (tile_x * TILE_SIZE) + (tile_x - 1)
     top = T_MARGIN + (tile_y * TILE_SIZE) + (tile_y - 1)
     return (left, top)
@@ -611,7 +612,7 @@ def getSpotClicked(board, x, y):
                 return (tile_x, tile_y)
     return (None, None)
 
-def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0):
+def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0, ai=False):
     # draw a tile at board coordinates tile_x and tile_y, optionally a few
     # pixels over (determined by adj_x and adj_y)
     left, top = getLeftTopOfTile(tile_x, tile_y)
@@ -635,7 +636,13 @@ def makeText(text, color, bgcolor, top, left):
     textRect.topleft = (top, left)
     return (textSurf, textRect)
 
-def drawBoard(board, message):
+def draw_outline():
+    left, top = getLeftTopOfTile(0, 0)
+    width = BOARD_WIDTH * TILE_SIZE
+    height = BOARD_HEIGHT * TILE_SIZE
+    game.draw.rect(screen, BORDER_COLOR, (left - 5, top - 5, width + 11, height + 11), 4)
+
+def drawBoard(board, message, ai=False):
     screen.fill(BACKGROUND_COLOR)
     if message:
         textSurf, textRect = makeText(message, MESSAGE_COLOR, BACKGROUND_COLOR, 5, 5)
@@ -646,10 +653,7 @@ def drawBoard(board, message):
             if board[tile_x][tile_y]:
                 drawTile(tile_x, tile_y, board[tile_x][tile_y])
 
-    left, top = getLeftTopOfTile(0, 0)
-    width = BOARD_WIDTH * TILE_SIZE
-    height = BOARD_HEIGHT * TILE_SIZE
-    game.draw.rect(screen, BORDER_COLOR, (left - 5, top - 5, width + 11, height + 11), 4)
+    draw_outline()
 
     screen.blit(RESET_SURF, RESET_RECT)
     screen.blit(NEW_SURF, NEW_RECT)
@@ -701,7 +705,6 @@ def slideAnimation(board, direction, message, animationSpeed):
 def generateNewPuzzle(numSlides):
     # From a starting configuration, make numSlides number of moves (and
     # animate these moves).
-    print(1)
     sequence = []
     board = getStartingBoard()
     drawBoard(board, '')
@@ -738,5 +741,5 @@ def resetAnimation(board, allMoves):
     
 if __name__ == '__main__':
     # mixer.music.load("Assets/Sounds/main theme.wav") 
-    # mixer.music.play(-1)    
+    # mixer.music.play(-1)  
     main_menu()
