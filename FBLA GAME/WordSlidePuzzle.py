@@ -7,10 +7,10 @@ BOARD_HEIGHT, BOARD_WIDTH = None, None
 TILE_SIZE = 80
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-FPS = 30
+FPS = 60
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
-num_slides = 50
+num_slides = 1
 
 #                R   G   B
 PRUSSIAN_BLUE = (29, 53, 87) 
@@ -81,34 +81,46 @@ def main_menu():
     resume_button = Button.Button(304, 75, resume_img, 1)
 
     # options 
-    options_img = game.image.load("Assets/buttons/options.png").convert_alpha() 
-    options_img = game.transform.smoothscale_by(options_img, 0.25)
-    options_button = Button.Button(304, 300, options_img, 1)
+    play_img2 = game.image.load('Assets/buttons/play.png').convert_alpha() 
+    play_img2 = game.transform.smoothscale_by(play_img2, 0.25)
+    play_button2 = Button.Button(304, 300, play_img2, 1)
 
     # quit
     quit_img = game.image.load("Assets/buttons/quit.png").convert_alpha() 
     quit_img = game.transform.smoothscale_by(quit_img, 0.25)
     quit_button = Button.Button(304, 500, quit_img, 1)
 
-    # play
-    play_img = game.image.load('Assets/buttons/play.png').convert_alpha() 
-    play_img = game.transform.smoothscale_by(play_img, 0.25)
-    play_button = Button.Button(300, 475, play_img, 1)
-
+    # for controlling where easy, medium, hard, play, and ai_battle appear all at once
+    current_x_pos = 12
+    
     # easy mode
     threeBoardSize_img = game.image.load('Assets/more buttons/easy.png').convert_alpha()
     threeBoardSize_img = game.transform.smoothscale_by(threeBoardSize_img, 0.25)
-    threeBoardSize_button = Button.Button(300, 100, threeBoardSize_img, 1)
+    threeBoardSize_button = Button.Button(300, current_x_pos, threeBoardSize_img, 1)
+    current_x_pos += 125
 
     # medium mode
     fourBoardSize_img = game.image.load('Assets/more buttons/medium.png').convert_alpha()
     fourBoardSize_img = game.transform.smoothscale_by(fourBoardSize_img, 0.25)
-    fourBoardSize_button = Button.Button(300, 225, fourBoardSize_img, 1)
+    fourBoardSize_button = Button.Button(300, current_x_pos, fourBoardSize_img, 1)
+    current_x_pos += 125
 
     # hard mode
     fiveBoardSize_img = game.image.load('Assets/more buttons/hard.png').convert_alpha() 
     fiveBoardSize_img = game.transform.smoothscale_by(fiveBoardSize_img, 0.25)
-    fiveBoardSize_button = Button.Button(300, 350, fiveBoardSize_img, 1)
+    fiveBoardSize_button = Button.Button(300, current_x_pos, fiveBoardSize_img, 1)
+    current_x_pos += 125
+
+    # play
+    play_img = game.image.load('Assets/buttons/play.png').convert_alpha() 
+    play_img = game.transform.smoothscale_by(play_img, 0.25)
+    play_button = Button.Button(300, current_x_pos, play_img, 1)
+    current_x_pos += 125
+
+    # battle ai button
+    battle_ai_img = game.image.load("Assets/more buttons/battleai.png").convert_alpha()
+    battle_ai_img = pygame.transform.smoothscale_by(battle_ai_img, 0.25)
+    battle_ai_button = Button.Button(300, current_x_pos, battle_ai_img, 1)
 
     # sound 
     sound_img = game.image.load('Assets/buttons/Sound.png').convert_alpha() 
@@ -135,11 +147,6 @@ def main_menu():
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
-    # battle ai button
-    battle_ai_img = game.image.load("Assets/more buttons/battleai.png").convert_alpha()
-    battle_ai_img = pygame.transform.smoothscale_by(battle_ai_img, 0.25)
-    battle_ai_button = Button.Button(0, 525, battle_ai_img, 1)
-
     # game loop
     chosen = False
     game.freetype.init()
@@ -161,7 +168,7 @@ def main_menu():
         # draw pause screen buttons
             if logo_button.draw(screen):
                 print("Baguette Boi lives forever!!!")
-            if options_button.draw(screen):
+            if play_button2.draw(screen):
                 playRandom() 
                 menu_state = "options"
             elif quit_button.draw(screen):
@@ -202,7 +209,7 @@ def main_menu():
 
         if menu_state == "tutorial":
             game.display.set_caption("Tutorial")
-            game.draw.rect(screen, BEIGE, (270,50,300,23))
+            game.draw.rect(screen, BEIGE, (282,50,300,250))
             tutorialFont = game.freetype.Font(font)
             tutorial_text = [" " * 13 + "TUTORIAL", "Click or use the arrow ", "keys to move the letter", \
                                 "tiles around. Try to ", "move all the letters to ", "form the correct words ", \
@@ -282,6 +289,9 @@ def initialize_variables():
     allMoves = [] # list of moves made from the solved configuration
 
 def single_main():
+    global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
+            NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
+
     while True: # main game loop 
         slideTo = None # the direction, if any, a tile should slide
         msg = f"Click near space or press arrow keys to slide. Your current score is: {len(allMoves)}" 
@@ -385,7 +395,7 @@ def single_main():
                     slideTo = DOWN
 
         if slideTo:
-            slideAnimation(mainBoard, slideTo, 'Click near space or press arrow keys to slide.', 8) # show slide on screen
+            slideAnimation(mainBoard, slideTo, 'Click near space or press arrow keys to slide.', 4) # show slide on screen
             makeMove(mainBoard, slideTo)
             allMoves.append(slideTo) # record the slide
 
@@ -394,7 +404,68 @@ def single_main():
 
 
 def ai_main():
-    pass
+    global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
+            NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
+
+    while True:
+        slideTo = None # the direction, if any, a tile should slide
+        msg = f"Click near space or press arrow keys to slide. Your current score is: {len(allMoves)}" 
+
+        drawBoard(mainBoard, msg)
+        checkForQuit()
+
+        for event in game.event.get(): # event handling loop
+            if event.type == MOUSEBUTTONUP:
+                spot_x, spot_y = getSpotClicked(mainBoard, event.pos[0], event.pos[1])
+                if (spot_x, spot_y) == (None, None):
+                # check if the user clicked on an option button
+                    if RESET_RECT.collidepoint(event.pos):
+                        resetAnimation(mainBoard, allMoves) # clicked on Reset button
+                    elif NEW_RECT.collidepoint(event.pos):
+                        mainBoard, solutionSeq = generateNewPuzzle(num_slides) 
+                        LETTER_POSITIONS = generate_new_words()
+                    elif SOLVE_RECT.collidepoint(event.pos):
+                        resetAnimation(mainBoard, solutionSeq + allMoves) # clicked on Solve button
+                    allMoves = []
+                else:
+                    # check if the clicked tile was next to the blank spot
+                    blank_x, blank_y = getBlankPosition(mainBoard)
+                    if spot_x == blank_x + 1 and spot_y == blank_y:
+                        playRandom() 
+                        slideTo = LEFT
+                    elif spot_x == blank_x - 1 and spot_y == blank_y:
+                        playRandom() 
+                        slideTo = RIGHT
+                    elif spot_x == blank_x and spot_y == blank_y + 1:
+                        playRandom() 
+                        if SOUND == True:
+                            selectSound.play()
+                        slideTo = UP
+                    elif spot_x == blank_x and spot_y == blank_y - 1:
+                        playRandom() 
+                        slideTo = DOWN
+            elif event.type == KEYUP:
+                # check if the user pressed a key to slide a tile
+                if event.key in (K_LEFT, K_a) and isValidMove(mainBoard, LEFT):
+                    playRandom()
+                    slideTo = LEFT
+                elif event.key in (K_RIGHT, K_d) and isValidMove(mainBoard, RIGHT):
+                    playRandom()
+                    slideTo = RIGHT
+                elif event.key in (K_UP, K_w) and isValidMove(mainBoard, UP):
+                    playRandom()
+                    slideTo = UP
+                elif event.key in (K_DOWN, K_s) and isValidMove(mainBoard, DOWN):
+                    playRandom() 
+                    slideTo = DOWN
+
+        if slideTo:
+            slideAnimation(mainBoard, slideTo, 'Click near space or press arrow keys to slide.', 4) # show slide on screen
+            makeMove(mainBoard, slideTo)
+            allMoves.append(slideTo) # record the slide
+
+        game.display.update()
+        FPS_CLOCK.tick(FPS)
 
 def generate_new_words():
     with open("Assets/dictionary/popular.txt", "r") as f:
@@ -630,6 +701,7 @@ def slideAnimation(board, direction, message, animationSpeed):
 def generateNewPuzzle(numSlides):
     # From a starting configuration, make numSlides number of moves (and
     # animate these moves).
+    print(1)
     sequence = []
     board = getStartingBoard()
     drawBoard(board, '')
@@ -639,7 +711,7 @@ def generateNewPuzzle(numSlides):
 
     for i in range(numSlides):
         move = getRandomMove(board, lastMove)
-        slideAnimation(board, move, 'Generating new puzzle...', animationSpeed=int(TILE_SIZE / 2))
+        slideAnimation(board, move, 'Generating new puzzle...', animationSpeed=TILE_SIZE // 2)
         makeMove(board, move)
         sequence.append(move)
         lastMove = move
@@ -661,7 +733,7 @@ def resetAnimation(board, allMoves):
             oppositeMove = LEFT
         elif move == LEFT:
             oppositeMove = RIGHT
-        slideAnimation(board, oppositeMove, '', animationSpeed=int(TILE_SIZE / 2))
+        slideAnimation(board, oppositeMove, '', animationSpeed=TILE_SIZE // 2)
         makeMove(board, oppositeMove)
     
 if __name__ == '__main__':
