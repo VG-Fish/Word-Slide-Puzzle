@@ -147,8 +147,9 @@ def main_menu():
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
-    global tile_colors_cherry
+    global tile_colors_cherry, tile_colors_gold
     tile_colors_cherry = import_tile_colors("cherry")
+    tile_colors_gold = import_tile_colors("gold")
 
     # game loop
     chosen = False
@@ -294,6 +295,8 @@ def initialize_variables():
 def single_main():
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
             NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
+
+    print(mainBoard)
 
     while True: # main game loop 
         slideTo = None # the direction, if any, a tile should slide
@@ -622,13 +625,20 @@ def getSpotClicked(board, x, y):
                 return (tile_x, tile_y)
     return (None, None)
 
-def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0, ai=False):
+def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0):
     # draw a tile at board coordinates tile_x and tile_y, optionally a few
     # pixels over (determined by adj_x and adj_y).
     left, top = getLeftTopOfTile(tile_x, tile_y)
     letter = LETTER_POSITIONS.get(number)
 
-    screen.blit(tile_colors_cherry[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
+    comparison = getStartingBoard()
+
+    if comparison[tile_x][tile_y] == number:
+        screen.blit(tile_colors_gold[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
+    else:
+        screen.blit(tile_colors_cherry[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
+        
+
 
 
 def makeText(text, color, bgcolor, top, left):
@@ -689,7 +699,6 @@ def slideAnimation(board, direction, message, animationSpeed):
     game.draw.rect(baseSurf, BACKGROUND_COLOR, (moveLeft, moveTop, TILE_SIZE, TILE_SIZE))
 
     for i in range(0, TILE_SIZE, animationSpeed):
-        print(i)
         # animate the tile sliding over
         checkForQuit()
         screen.blit(baseSurf, (0, 0))
