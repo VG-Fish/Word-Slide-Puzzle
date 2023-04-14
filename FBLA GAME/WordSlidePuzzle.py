@@ -10,27 +10,29 @@ SCREEN_HEIGHT = 600
 FPS = 60
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
-num_slides = 50
+num_slides = 40
 
 #                R   G   B
-PRUSSIAN_BLUE = (29, 53, 87) 
-HONEYDEW =      (241, 250, 238) 
-CELADON_BLUE =  (69, 123, 157) 
-POWDER_BLUE  =  (168, 218, 220) 
+PRUSSIAN_BLUE = (28, 26, 58) 
+HONEYDEW =      (53, 82, 129) 
+CELADON_BLUE =  (42, 38, 98) 
+POWDER_BLUE  =  (28, 26, 58) 
 IMPERIAL_RED =  (230, 57, 70) 
 BEIGE =         (196,164,132)
-DUSTY_ROSE =    (220, 174, 150)
+DUSTY_ROSE =    (0, 0, 0)
+WHITE =         (0, 0, 0)
+BLACK =         (255, 255, 255)
 
 BACKGROUND_COLOR = POWDER_BLUE
-TILE_COLOR = IMPERIAL_RED
-TEXT_COLOR = HONEYDEW
+TILE_COLOR = CELADON_BLUE
+TEXT_COLOR = BLACK
 BORDER_COLOR = CELADON_BLUE
 TILE_FONT_SIZE = 40
 BASIC_FONT_SIZE = 20
 SMALL_FONT_SIZE = 25
 TEXT_COL = (255, 255, 255)
 
-MESSAGE_COLOR = HONEYDEW
+MESSAGE_COLOR = BLACK
 
 UP = 'up'
 DOWN = 'down'
@@ -68,7 +70,7 @@ def main_menu():
 
     # define fonts
     game.font.init()
-    font = "Assets/funtauna11/FuntaunaBold.otf"
+    font = "Assets/nexa-rust.handmade-extended.otf"
 
     # back
     back_img = game.image.load('Assets/more buttons/back.png').convert_alpha() 
@@ -254,11 +256,6 @@ def main_menu():
 
         if menu_state == "themes":
             game.display.set_caption("Themes")
-            themesTextDisplay = game.freetype.Font(font)
-            themes_text = "Choose a theme."
-            game.draw.rect(screen, BEIGE, (290, 20, 250, 70))
-
-            themesTextDisplay.render_to(screen, (325, 40, 100, 100), themes_text, size=20)
 
             if back_button.draw(screen):
                 if tile_chosen:
@@ -304,7 +301,7 @@ def main_menu():
         if menu_state == "leader_board":
             game.display.set_caption("Leader Board")
 
-            leaderBoard = game.draw.rect(screen, BEIGE, (200,100,400,400))
+            leaderBoard = game.draw.rect(screen, PRUSSIAN_BLUE, (200,100,400,400))
             leaderBoardTextDisplay = game.freetype.Font(font)
             leaderBoardTextDisplay.render_to(screen, (295, 105, 160), "Leader Board", TEXT_COL, size=35)
             leaderBoardTextDisplay.render_to(screen, (220, 150, 160), "Score   Name", TEXT_COL, size=30)
@@ -317,7 +314,7 @@ def main_menu():
                         break
                     space_idx = data[i].find(" ")
                     score, name = data[i][:space_idx], data[i][space_idx:]
-                    leaderBoardTextDisplay.render_to(screen,(225,increment_y),"{} {} {}".format(score, " "*9, name),TEXT_COL, size=20)        
+                    leaderBoardTextDisplay.render_to(screen,(225,increment_y),"{} {} {}".format(score, " "*9, name),TEXT_COL, PRUSSIAN_BLUE, size=20)        
                     increment_y += 20
                     
             if back_button.draw(screen):
@@ -326,16 +323,16 @@ def main_menu():
 
         if menu_state == "tutorial":
             game.display.set_caption("Tutorial")
-            game.draw.rect(screen, BEIGE, (282,50,300,250))
+            game.draw.rect(screen, PRUSSIAN_BLUE, (200,30,425,350))
             tutorialFont = game.freetype.Font(font)
             tutorial_text = [" " * 13 + "TUTORIAL", "Click or use the arrow ", "keys to move the letter", \
                                 "tiles around. Try to ", "move all the letters to ", "form the correct words ", \
-                                "in the least moves ", "possible to get", "lowest score. Enjoy!"]
+                                "in the least moves ", "possible to get", "lowest score."]
 
-            increment_y = 60
+            increment_y = 40
             for i in tutorial_text:
-                tutorialFont.render_to(screen, (320,increment_y), i, TEXT_COL, BEIGE, 1, 0, 20)
-                increment_y += 25
+                tutorialFont.render_to(screen, (220,increment_y), i, BLACK, PRUSSIAN_BLUE, 1, 0, 30)
+                increment_y += 35
 
             if back_button.draw(screen):
                 playRandom()
@@ -362,9 +359,6 @@ def main_menu():
             elif play_button.draw(screen) and chosen:
                 in_main_menu = False
                 single_player = True
-            """elif battle_ai_button.draw(screen) and chosen:
-                in_main_menu = False
-                ai_battle = True"""
 
         # event handler
         for event in game.event.get():
@@ -378,8 +372,7 @@ def main_menu():
     initialize_variables()
     if single_player:
         single_main()
-    """elif ai_battle:
-        ai_main()"""
+    
 def update_all(color):
     colors = [("blueberry", blueberry_button), ("butterscotch", butterscotch_button), \
               ("cherry", cherry_button), ("kiwi", kiwi_button), ("mint", mint_button), ("peach", peach_button), \
@@ -419,11 +412,11 @@ def single_main():
 
     while True: # main game loop 
         slideTo = None # the direction, if any, a tile should slide
-        msg = f"Click near space or press arrow keys to slide. Your current score is: {len(allMoves)}" 
+        msg = f"Click near space or press arrow keys to slide. Your current score is {len(allMoves)}" 
 
         if mainBoard == SOLVED_BOARD and len(allMoves):
             game.display.set_caption("Input Name")
-            msg = f"Solved! Your final score is: {len(allMoves)}"
+            msg = f"Solved! Your final score is {len(allMoves)}"
 
             leader_board_font = game.font.Font(font, 40)
             leaderBoardManager = pyti.TextInputManager(validator = lambda input: len(input) <= 20)
@@ -436,25 +429,24 @@ def single_main():
             leaderBoardRun = True
             while leaderBoardRun:
                 leaderBoardScreen.fill(POWDER_BLUE)
-                game.draw.rect(leaderBoardScreen, DUSTY_ROSE, (250,0,300,130))
+                game.draw.rect(leaderBoardScreen, WHITE, (250,50,320,80))
 
                 leader_board_font = game.freetype.Font(font)
-                leader_board_text = ['Input your name to go on', 'the leaderboard.', 
-                                     'Press Enter/Return when', 'you have finished.']
-                increment_y = 0
+                leader_board_text = ['Congratulations', 'Input name for leaderboard']
+                increment_y = 55
                 for i in leader_board_text:
-                    leader_board_font.render_to(screen, (280, increment_y), i, TEXT_COL, DUSTY_ROSE, 1, 0, 20)
+                    leader_board_font.render_to(screen, (260, increment_y), i, TEXT_COL, WHITE, 1, 0, 20)
                     increment_y += 25
-                leader_board_font.render_to(screen, (280, increment_y), msg[8:], TEXT_COL, DUSTY_ROSE, 1, 0, 20)
+                leader_board_font.render_to(screen, (260, increment_y), msg[8:], TEXT_COL, WHITE, 1, 0, 20)
 
-                game.draw.rect(leaderBoardScreen, DUSTY_ROSE, (0,175,180,30))
-                leader_board_font.render_to(screen, (0, 180), "Start typing here: ", TEXT_COL, DUSTY_ROSE, 1, 0, 20)
+                game.draw.rect(leaderBoardScreen, WHITE, (50,260,200,30))
+                leader_board_font.render_to(screen, (55, 265), "Start typing here ", TEXT_COL, WHITE, 1, 0, 20)
 
                 events = game.event.get()
                 leaderBoardText.update(events)
         
-                leaderBoardScreen.blit(leaderBoardText.surface, (185, 160))
-                leaderBoardText.font_color = IMPERIAL_RED
+                leaderBoardScreen.blit(leaderBoardText.surface, (260, 250))
+                leaderBoardText.font_color = TEXT_COL
 
                 for event in events:
                     if event.type == game.QUIT:
