@@ -475,8 +475,7 @@ def import_tile_colors(color):
     letters = s.ascii_uppercase
     for i in range(26):
         temp_img = game.image.load(f'Assets/{color}_color_theme/{letters[i]}.png').convert_alpha() 
-        print(temp_img.get_rect())
-        temp_img = pygame.transform.smoothscale_by(temp_img, .3)
+        temp_img = pygame.transform.smoothscale_by(temp_img, .32)
         temp[letters[i].lower()] = temp_img
     
     return temp
@@ -625,22 +624,12 @@ def getSpotClicked(board, x, y):
 
 def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0, ai=False):
     # draw a tile at board coordinates tile_x and tile_y, optionally a few
-    # pixels over (determined by adj_x and adj_y)
+    # pixels over (determined by adj_x and adj_y).
     left, top = getLeftTopOfTile(tile_x, tile_y)
-
-    screen.blit(tile_colors_cherry["a"], (0, 0, TILE_SIZE, TILE_SIZE))
-    game.draw.rect(screen, TILE_COLOR, (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
-
     letter = LETTER_POSITIONS.get(number)
-    letterSurf = TILE_FONT.render(letter, True, TEXT_COLOR)
-    letterRect = letterSurf.get_rect()
-    letterRect.center = left + TILE_SIZE // 2 + adj_x, top + TILE_SIZE // 2 + adj_y
-    screen.blit(letterSurf, letterRect)
-    
-    textSurf = SMALL_FONT.render(str(number), True, TEXT_COLOR)
-    textRect = textSurf.get_rect()
-    textRect.bottomright = left + TILE_SIZE + adj_x, top + TILE_SIZE + adj_y
-    screen.blit(textSurf, textRect)
+
+    screen.blit(tile_colors_cherry[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
+
 
 def makeText(text, color, bgcolor, top, left):
     # create the Surface and Rect objects for some text.
@@ -700,6 +689,7 @@ def slideAnimation(board, direction, message, animationSpeed):
     game.draw.rect(baseSurf, BACKGROUND_COLOR, (moveLeft, moveTop, TILE_SIZE, TILE_SIZE))
 
     for i in range(0, TILE_SIZE, animationSpeed):
+        print(i)
         # animate the tile sliding over
         checkForQuit()
         screen.blit(baseSurf, (0, 0))
