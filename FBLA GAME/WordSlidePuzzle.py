@@ -10,7 +10,7 @@ SCREEN_HEIGHT = 600
 FPS = 60
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
-num_slides = 1
+num_slides = 50
 
 #                R   G   B
 PRUSSIAN_BLUE = (29, 53, 87) 
@@ -56,7 +56,7 @@ def main_menu():
 
     # game variables
     scroll = 0
-    in_main_menu, single_player, ai_battle = True, False, False
+    in_main_menu, single_player = True, False
     menu_state = "main"
     tiles = m.ceil(SCREEN_WIDTH / SCREEN_HEIGHT)+1
     FPS = 60
@@ -91,7 +91,7 @@ def main_menu():
     quit_button = Button.Button(304, 500, quit_img, 1)
 
     # for controlling where easy, medium, hard, play, and ai_battle appear all at once
-    current_x_pos = 12
+    current_x_pos = 65
     
     # easy mode
     threeBoardSize_img = game.image.load('Assets/more buttons/easy.png').convert_alpha()
@@ -125,7 +125,7 @@ def main_menu():
     # sound 
     sound_img = game.image.load('Assets/buttons/Sound.png').convert_alpha() 
     sound_img = game.transform.smoothscale_by(sound_img, 0.25)
-    sound_button = Button.Button(375, 400, sound_img, 1)
+    sound_button = Button.Button(0, 0, sound_img, 1)
 
     # logo
     logo_img = game.image.load("Assets/game_images/logo.png").convert_alpha() 
@@ -147,12 +147,73 @@ def main_menu():
     game_back_img = pygame.transform.smoothscale_by(game_back_img, 0.25)
     game_back_button = Button.Button(0, 525, game_back_img, 1)
 
-    global tile_colors_cherry, tile_colors_gold
-    tile_colors_cherry = import_tile_colors("cherry")
+    # themes 
+    themes_img = game.image.load("Assets/more buttons/themes.png").convert_alpha()
+    themes_img = pygame.transform.smoothscale_by(themes_img, 0.25)
+    themes_button = Button.Button(300, 400, themes_img, 1)
+
+    # blueberry a
+    global blueberry_button
+    x_pos, y_pos, scale = 15, 250, 0.4
+    blueberry_img = game.image.load("Assets/blueberry_color_theme/a.png").convert_alpha()
+    blueberry_img = pygame.transform.smoothscale_by(blueberry_img, scale)
+    blueberry_img.set_alpha(150)
+    blueberry_button = Button.Button(x_pos, y_pos, blueberry_img, 1)
+    x_pos += 110
+
+    # butterscotch a
+    global butterscotch_button
+    butterscotch_img = game.image.load("Assets/butterscotch_color_theme/a.png").convert_alpha()
+    butterscotch_img = pygame.transform.smoothscale_by(butterscotch_img, scale)
+    butterscotch_img.set_alpha(150)
+    butterscotch_button = Button.Button(x_pos, y_pos, butterscotch_img, 1)
+    x_pos += 110 
+
+    # kiwi a
+    global kiwi_button
+    kiwi_img = game.image.load("Assets/kiwi_color_theme/a.png").convert_alpha()
+    kiwi_img = pygame.transform.smoothscale_by(kiwi_img, scale)
+    kiwi_img.set_alpha(150)
+    kiwi_button = Button.Button(x_pos, y_pos, kiwi_img, 1)
+    x_pos += 110 
+
+    # mint a
+    global mint_button
+    mint_img = game.image.load("Assets/mint_color_theme/a.png").convert_alpha()
+    mint_img = pygame.transform.smoothscale_by(mint_img, scale)
+    mint_img.set_alpha(150)
+    mint_button = Button.Button(x_pos, y_pos, mint_img, 1)
+    x_pos += 110 
+
+    # peach a
+    global peach_button
+    peach_img = game.image.load("Assets/peach_color_theme/a.png").convert_alpha()
+    peach_img = pygame.transform.smoothscale_by(peach_img, scale)
+    peach_img.set_alpha(150)
+    peach_button = Button.Button(x_pos, y_pos, peach_img, 1)
+    x_pos += 110 
+
+    # plum a
+    global plum_button
+    plum_img = game.image.load("Assets/plum_color_theme/a.png").convert_alpha()
+    plum_img = pygame.transform.smoothscale_by(plum_img, scale)
+    plum_img.set_alpha(150)
+    plum_button = Button.Button(x_pos, y_pos, plum_img, 1)
+    x_pos += 110 
+
+    # cherry a
+    global cherry_button
+    cherry_img = game.image.load("Assets/cherry_color_theme/a.png").convert_alpha()
+    cherry_img = pygame.transform.smoothscale_by(cherry_img, scale)
+    cherry_img.set_alpha(150)
+    cherry_button = Button.Button(x_pos, y_pos, cherry_img, 1)
+
+    global tile_colors, tile_colors_gold
     tile_colors_gold = import_tile_colors("gold")
+    tile_colors = import_tile_colors("cherry")
 
     # game loop
-    chosen = False
+    chosen, color, tile_chosen = False, "cherry", False
     game.freetype.init()
     while in_main_menu:
         clock.tick(FPS)
@@ -187,6 +248,58 @@ def main_menu():
             elif tutorial_button.draw(screen):
                 menu_state = "tutorial"
                 playRandom() 
+            elif themes_button.draw(screen):
+                menu_state = "themes"
+                play_button
+
+        if menu_state == "themes":
+            game.display.set_caption("Themes")
+            themesTextDisplay = game.freetype.Font(font)
+            themes_text = "Choose a theme."
+            game.draw.rect(screen, BEIGE, (290, 20, 250, 70))
+
+            themesTextDisplay.render_to(screen, (325, 40, 100, 100), themes_text, size=20)
+
+            if back_button.draw(screen):
+                if tile_chosen:
+                    tile_colors = import_tile_colors(color)
+                    menu_state = "main"
+            elif blueberry_button.draw(screen):
+                blueberry_button.update_alpha(255)
+                color = "blueberry"
+                tile_chosen = True
+                playRandom()
+            elif butterscotch_button.draw(screen):
+                butterscotch_button.update_alpha(255)
+                color = "butterscotch"
+                tile_chosen = True
+                playRandom()
+            elif kiwi_button.draw(screen):
+                kiwi_button.update_alpha(255)
+                color = "kiwi"
+                tile_chosen = True
+                playRandom()
+            elif mint_button.draw(screen):
+                mint_button.update_alpha(255)
+                color = "mint"
+                tile_chosen = True
+                playRandom()
+            elif peach_button.draw(screen):
+                peach_button.update_alpha(255)
+                tile_chosen = True
+                color = "peach"
+                playRandom()
+            elif plum_button.draw(screen):
+                plum_button.update_alpha(255)
+                tile_chosen = True
+                color = "plum"
+                playRandom()
+            elif cherry_button.draw(screen):
+                cherry_button.update_alpha(255)
+                tile_chosen = True
+                color = "cherry"
+                playRandom()
+            update_all(color)
 
         if menu_state == "leader_board":
             game.display.set_caption("Leader Board")
@@ -267,6 +380,14 @@ def main_menu():
         single_main()
     """elif ai_battle:
         ai_main()"""
+def update_all(color):
+    colors = [("blueberry", blueberry_button), ("butterscotch", butterscotch_button), \
+              ("cherry", cherry_button), ("kiwi", kiwi_button), ("mint", mint_button), ("peach", peach_button), \
+              ("plum", plum_button)]
+    
+    for i in colors:
+        if i[0] != color:
+            i[1].update_alpha(150)
 
 def initialize_variables():
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
@@ -295,8 +416,6 @@ def initialize_variables():
 def single_main():
     global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
             NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
-
-    print(mainBoard)
 
     while True: # main game loop 
         slideTo = None # the direction, if any, a tile should slide
@@ -408,71 +527,6 @@ def single_main():
         game.display.update()
         FPS_CLOCK.tick(FPS)
 
-
-"""def ai_main(): 
-    global  TEXT_FONT, X_MARGIN, T_MARGIN, LETTER_POSITIONS, TILE_FONT, TEXT_FONT, SMALL_FONT, RESET_RECT, RESET_SURF, \
-            NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, mainBoard, solutionSeq, SOLVED_BOARD, allMoves, FPS_CLOCK
-
-    while True:
-        slideTo = None # the direction, if any, a tile should slide
-        msg = f"Click near space or press arrow keys to slide. Your current score is: {len(allMoves)}" 
-
-        drawBoard(mainBoard, msg)
-        checkForQuit()
-
-        for event in game.event.get(): # event handling loop
-            if event.type == MOUSEBUTTONUP:
-                spot_x, spot_y = getSpotClicked(mainBoard, event.pos[0], event.pos[1])
-                if (spot_x, spot_y) == (None, None):
-                # check if the user clicked on an option button
-                    if RESET_RECT.collidepoint(event.pos):
-                        resetAnimation(mainBoard, allMoves) # clicked on Reset button
-                    elif NEW_RECT.collidepoint(event.pos):
-                        mainBoard, solutionSeq = generateNewPuzzle(num_slides) 
-                        LETTER_POSITIONS = generate_new_words()
-                    elif SOLVE_RECT.collidepoint(event.pos):
-                        resetAnimation(mainBoard, solutionSeq + allMoves) # clicked on Solve button
-                    allMoves = []
-                else:
-                    # check if the clicked tile was next to the blank spot
-                    blank_x, blank_y = getBlankPosition(mainBoard)
-                    if spot_x == blank_x + 1 and spot_y == blank_y:
-                        playRandom() 
-                        slideTo = LEFT
-                    elif spot_x == blank_x - 1 and spot_y == blank_y:
-                        playRandom() 
-                        slideTo = RIGHT
-                    elif spot_x == blank_x and spot_y == blank_y + 1:
-                        playRandom() 
-                        if SOUND == True:
-                            selectSound.play()
-                        slideTo = UP
-                    elif spot_x == blank_x and spot_y == blank_y - 1:
-                        playRandom() 
-                        slideTo = DOWN
-            elif event.type == KEYUP:
-                # check if the user pressed a key to slide a tile
-                if event.key in (K_LEFT, K_a) and isValidMove(mainBoard, LEFT):
-                    playRandom()
-                    slideTo = LEFT
-                elif event.key in (K_RIGHT, K_d) and isValidMove(mainBoard, RIGHT):
-                    playRandom()
-                    slideTo = RIGHT
-                elif event.key in (K_UP, K_w) and isValidMove(mainBoard, UP):
-                    playRandom()
-                    slideTo = UP
-                elif event.key in (K_DOWN, K_s) and isValidMove(mainBoard, DOWN):
-                    playRandom() 
-                    slideTo = DOWN
-
-        if slideTo:
-            slideAnimation(mainBoard, slideTo, 'Click near space or press arrow keys to slide.', 4) # show slide on screen
-            makeMove(mainBoard, slideTo)
-            allMoves.append(slideTo) # record the slide
-
-        game.display.update()
-        FPS_CLOCK.tick(FPS)"""
-
 def import_tile_colors(color):
     temp = {}
     letters = s.ascii_uppercase
@@ -499,6 +553,7 @@ def generate_new_words():
     randomWords.append(" ")
 
     # gets the index of all the letters of each word after the list(randomWords) is combined in a string
+    global tempRandomWords
     tempRandomWords = "".join(randomWords)
     LETTER_POSITIONS = dict(enumerate(tempRandomWords[:-1], start=1))
     LETTER_POSITIONS[None] = ""
@@ -610,7 +665,7 @@ def getRandomMove(board, lastMove=None):
     # return a random move from the list of remaining moves
     return r.choice(validMoves)
 
-def getLeftTopOfTile(tile_x, tile_y, ai=False):
+def getLeftTopOfTile(tile_x, tile_y):
     left = X_MARGIN + (tile_x * TILE_SIZE) + (tile_x - 1)
     top = T_MARGIN + (tile_y * TILE_SIZE) + (tile_y - 1)
     return (left, top)
@@ -636,10 +691,8 @@ def drawTile(tile_x, tile_y, number, adj_x=0, adj_y=0):
     if comparison[tile_x][tile_y] == number:
         screen.blit(tile_colors_gold[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
     else:
-        screen.blit(tile_colors_cherry[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
+        screen.blit(tile_colors[letter], (left + adj_x, top + adj_y, TILE_SIZE, TILE_SIZE))
         
-
-
 
 def makeText(text, color, bgcolor, top, left):
     # create the Surface and Rect objects for some text.
@@ -654,7 +707,7 @@ def draw_outline():
     height = BOARD_HEIGHT * TILE_SIZE
     game.draw.rect(screen, BORDER_COLOR, (left - 5, top - 5, width + 11, height + 11), 4)
 
-def drawBoard(board, message, ai=False):
+def drawBoard(board, message):
     screen.fill(BACKGROUND_COLOR)
     if message:
         textSurf, textRect = makeText(message, MESSAGE_COLOR, BACKGROUND_COLOR, 5, 5)
@@ -752,6 +805,6 @@ def resetAnimation(board, allMoves):
         makeMove(board, oppositeMove)
     
 if __name__ == '__main__':
-    # mixer.music.load("Assets/Sounds/main theme.wav") 
-    # mixer.music.play(-1)  
+    mixer.music.load("Assets/Sounds/theme.wav") 
+    mixer.music.play(-1)  
     main_menu()
