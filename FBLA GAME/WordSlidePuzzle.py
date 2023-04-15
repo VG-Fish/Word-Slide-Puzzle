@@ -5,8 +5,6 @@ from pygame import mixer
 
 BOARD_HEIGHT, BOARD_WIDTH = None, None 
 TILE_SIZE = 80
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
 FPS = 60
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
@@ -49,11 +47,11 @@ sounds = [blockSound1, blockSound2, blockSound3]
 def main_menu():
     global SOUND, BOARD_HEIGHT, BOARD_WIDTH, FPS_CLOCK, screen, TEXT_FONT, TILE_FONT, SMALL_FONT, RESET_SURF, \
         RESET_RECT, NEW_SURF, NEW_RECT, SOLVE_SURF, SOLVE_RECT, X_MARGIN, T_MARGIN, WORDS_LEN_1, WORDS_LEN_2, \
-        LETTER_POSITIONS, game_back_button, font
+        LETTER_POSITIONS, game_back_button, font, SCREEN_WIDTH, SCREEN_HEIGHT
     
     icon = game.image.load("Assets/game_images/app_icon.png")
     game.display.set_icon(icon)
-    screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
     game.display.set_caption("Main Menu")
 
     # game variables
@@ -76,6 +74,11 @@ def main_menu():
     back_img = game.image.load('Assets/more buttons/back.png').convert_alpha() 
     back_img = pygame.transform.smoothscale_by(back_img, 0.3)
     back_button = Button.Button(625, 475, back_img, 1)
+
+    # apply
+    apply_img = game.image.load('Assets/more buttons/apply.png').convert_alpha() 
+    apply_img = pygame.transform.smoothscale_by(apply_img, 0.3)
+    apply_button = Button.Button(10, 490, apply_img, 1)
 
     # resume 
     resume_img = game.image.load("Assets/buttons/resume.png").convert_alpha() 
@@ -218,6 +221,7 @@ def main_menu():
     chosen, color, tile_chosen = False, "cherry", False
     game.freetype.init()
     while in_main_menu:
+
         clock.tick(FPS)
 
         # set up background:
@@ -231,6 +235,9 @@ def main_menu():
         if abs(scroll) > SCREEN_WIDTH:
             scroll = 0
 
+        SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_info()
+        game.draw.rect(screen, WHITE, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 100, 100))
+
         if menu_state == "main":
         # draw pause screen buttons
             if logo_button.draw(screen):
@@ -238,6 +245,7 @@ def main_menu():
             if play_button2.draw(screen):
                 playRandom() 
                 menu_state = "options"
+                game.mouse.set_pos((200, 200))
             elif quit_button.draw(screen):
                 playRandom() 
                 terminate()
@@ -252,15 +260,14 @@ def main_menu():
                 playRandom() 
             elif themes_button.draw(screen):
                 menu_state = "themes"
-                play_button
+                playRandom()
 
         if menu_state == "themes":
             game.display.set_caption("Themes")
 
-            if back_button.draw(screen):
-                if tile_chosen:
-                    tile_colors = import_tile_colors(color)
-                    menu_state = "main"
+            if apply_button.draw(screen):
+                tile_colors = import_tile_colors(color)
+                menu_state = "main"
             elif blueberry_button.draw(screen):
                 blueberry_button.update_alpha(255)
                 color = "blueberry"
@@ -296,7 +303,7 @@ def main_menu():
                 tile_chosen = True
                 color = "cherry"
                 playRandom()
-            update_all(color)
+            update_all(color, tile_chosen, "blueberry")
 
         if menu_state == "leader_board":
             game.display.set_caption("Leader Board")
@@ -344,21 +351,21 @@ def main_menu():
             if threeBoardSize_button.draw(screen):
                 playRandom() 
                 BOARD_WIDTH, BOARD_HEIGHT = 3, 3
-                chosen = True
+                in_main_menu = False
+                single_player = True
             elif fourBoardSize_button.draw(screen):
                 playRandom() 
                 BOARD_WIDTH, BOARD_HEIGHT = 4, 4 
-                chosen = True
+                in_main_menu = False
+                single_player = True
             elif fiveBoardSize_button.draw(screen):
                 playRandom() 
                 BOARD_WIDTH, BOARD_HEIGHT = 5, 5
-                chosen = True
+                in_main_menu = False
+                single_player = True
             elif back_button.draw(screen):
                 playRandom()
                 menu_state = "main"
-            elif play_button.draw(screen) and chosen:
-                in_main_menu = False
-                single_player = True
 
         # event handler
         for event in game.event.get():
@@ -373,13 +380,15 @@ def main_menu():
     if single_player:
         single_main()
     
-def update_all(color):
+def update_all(color, chosen, default):
     colors = [("blueberry", blueberry_button), ("butterscotch", butterscotch_button), \
               ("cherry", cherry_button), ("kiwi", kiwi_button), ("mint", mint_button), ("peach", peach_button), \
               ("plum", plum_button)]
     
     for i in colors:
-        if i[0] != color:
+        if not chosen and i[0] == default:
+            i[1].update_alpha(255)
+        elif i[0] != color:
             i[1].update_alpha(150)
 
 def initialize_variables():
@@ -421,7 +430,7 @@ def single_main():
             leader_board_font = game.font.Font(font, 40)
             leaderBoardManager = pyti.TextInputManager(validator = lambda input: len(input) <= 20)
             leaderBoardText = pyti.TextInputVisualizer(manager=leaderBoardManager, font_object=leader_board_font)
-            leaderBoardScreen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+            leaderBoardScreen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 
             clock = game.time.Clock()
             game.key.set_repeat(200, 25)
@@ -795,8 +804,37 @@ def resetAnimation(board, allMoves):
             oppositeMove = RIGHT
         slideAnimation(board, oppositeMove, '', animationSpeed=TILE_SIZE // 2)
         makeMove(board, oppositeMove)
+
+def get_screen_info():
+    info = game.display.Info()
+    w = info.current_w
+    h = info.current_h
+
+    return w, h
+
+def invalid_screen_size(w, h):
+    icon = game.image.load("Assets/game_images/app_icon.png")
+    game.display.set_icon(icon)
+    screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    game.display.set_caption("Invalid Screen")
+
+    # invalid quit
+    invalid_quit_img = game.image.load("Assets/buttons/quit.png").convert_alpha() 
+    invalid_quit_img = game.transform.smoothscale_by(invalid_quit_img, 0.01)
+    invalid_quit_button = Button.Button(0, 0, invalid_quit_img, 1)
+
+    while True:
+        if invalid_quit_button.draw(screen):
+            terminate()
     
 if __name__ == '__main__':
     mixer.music.load("Assets/Sounds/theme.wav") 
     mixer.music.play(-1)  
+    game.init()
+    global SCREEN_WIDTH, SCREEN_HEIGHT
+    SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_info()
+    #SCREEN_WIDTH, SCREEN_HEIGHT = 400, 400
+    if SCREEN_WIDTH <= 400 or SCREEN_HEIGHT <= 400:
+        invalid_screen_size(SCREEN_WIDTH, SCREEN_HEIGHT)
+        terminate()
     main_menu()
