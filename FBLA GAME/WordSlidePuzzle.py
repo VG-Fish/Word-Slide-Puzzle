@@ -9,12 +9,14 @@ FPS = 60
 BLANK = None
 WORDS_LEN_1, WORDS_LEN_2 = [], []
 num_slides = 40
+SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
 
 #                R   G   B
 PRUSSIAN_BLUE = (28, 26, 58) 
 HONEYDEW =      (53, 82, 129) 
 CELADON_BLUE =  (42, 38, 98) 
 POWDER_BLUE  =  (28, 26, 58) 
+LIGHT_BLUE =    (173, 216, 230)
 IMPERIAL_RED =  (230, 57, 70) 
 BEIGE =         (196,164,132)
 DUSTY_ROSE =    (0, 0, 0)
@@ -53,6 +55,7 @@ def main_menu():
     game.display.set_icon(icon)
     screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
     game.display.set_caption("Main Menu")
+    font = "Assets/nexa-rust.handmade-extended.otf"
 
     # game variables
     scroll = 0
@@ -65,10 +68,6 @@ def main_menu():
     background = game.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
     background_rect = background.get_rect()
     SOUND = True
-
-    # define fonts
-    game.font.init()
-    font = "Assets/nexa-rust.handmade-extended.otf"
 
     # back
     back_img = game.image.load('Assets/more buttons/back.png').convert_alpha() 
@@ -235,9 +234,6 @@ def main_menu():
         if abs(scroll) > SCREEN_WIDTH:
             scroll = 0
 
-        SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_info()
-        game.draw.rect(screen, WHITE, (SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2, 100, 100))
-
         if menu_state == "main":
         # draw pause screen buttons
             if logo_button.draw(screen):
@@ -316,7 +312,7 @@ def main_menu():
             with open("FBLA GAME/highscore.txt", "r") as f:
                 increment_y = 185
                 data = sorted([i for i in f.read().splitlines() if i])
-                for i in range(15):
+                for i in range(15): 
                     if i >= len(data):
                         break
                     space_idx = data[i].find(" ")
@@ -804,37 +800,8 @@ def resetAnimation(board, allMoves):
             oppositeMove = RIGHT
         slideAnimation(board, oppositeMove, '', animationSpeed=TILE_SIZE // 2)
         makeMove(board, oppositeMove)
-
-def get_screen_info():
-    info = game.display.Info()
-    w = info.current_w
-    h = info.current_h
-
-    return w, h
-
-def invalid_screen_size(w, h):
-    icon = game.image.load("Assets/game_images/app_icon.png")
-    game.display.set_icon(icon)
-    screen = game.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    game.display.set_caption("Invalid Screen")
-
-    # invalid quit
-    invalid_quit_img = game.image.load("Assets/buttons/quit.png").convert_alpha() 
-    invalid_quit_img = game.transform.smoothscale_by(invalid_quit_img, 0.01)
-    invalid_quit_button = Button.Button(0, 0, invalid_quit_img, 1)
-
-    while True:
-        if invalid_quit_button.draw(screen):
-            terminate()
-    
+        
 if __name__ == '__main__':
     mixer.music.load("Assets/Sounds/theme.wav") 
     mixer.music.play(-1)  
-    game.init()
-    global SCREEN_WIDTH, SCREEN_HEIGHT
-    SCREEN_WIDTH, SCREEN_HEIGHT = get_screen_info()
-    #SCREEN_WIDTH, SCREEN_HEIGHT = 400, 400
-    if SCREEN_WIDTH <= 400 or SCREEN_HEIGHT <= 400:
-        invalid_screen_size(SCREEN_WIDTH, SCREEN_HEIGHT)
-        terminate()
     main_menu()
